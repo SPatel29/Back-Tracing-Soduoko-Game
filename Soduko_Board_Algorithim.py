@@ -1,30 +1,16 @@
 import random
 
-MY_COMPLETED_BOARD = [
-
-    [7, 8, 0, 4, 0, 0, 1, 2, 0],
-    [6, 0, 0, 0, 7, 5, 0, 0, 9],
-    [0, 0, 0, 6, 0, 1, 0, 7, 8],
-    [0, 0, 7, 0, 4, 0, 2, 6, 0],
-    [0, 0, 1, 0, 5, 0, 9, 3, 0],
-    [9, 0, 4, 0, 6, 0, 0, 0, 5],
-    [0, 7, 0, 3, 0, 0, 0, 1, 2],
-    [1, 2, 0, 0, 0, 7, 4, 0, 0],
-    [0, 4, 9, 2, 0, 6, 0, 0, 7]
-
-]
-
 MY_INITIAL_BOARD = [
 
-    [-1, 8, -1, 4, -1, 0, 1, 2, 0],
-    [6, 0, 0, 0, -1, 5, -1, 0, 9],
-    [0, -1, 0, -1, 0, 1, 0, 7, -1],
-    [0, -1, 7, -1, 4, -1, -1, -1, -1],
-    [0, -1, 1, -1, 5, 0, 9, 3, -1],
-    [-1, 0, -1, -1, 6, -1, -1, -1, 5],
-    [0, -1, 0, 3, -1, 0, 0, 1, 2],
-    [1, 2, 0, -1, -1, 7, -1, -1, 0],
-    [0, 4, 9, 2, -1, -1, 0, -1, 7]
+    [7, 8, -1, 4, -1, -1, 1, 2, -1],
+    [6, -1, -1, -1, 7, 5, -1, -1, 9],
+    [-1, -1, -1, 6, -1, 1, -1, 7, 8],
+    [-1, -1, 7, -1, 4, -1, 2, 6, -1],
+    [-1, -1, 1, -1, 5, -1, 9, 3, -1],
+    [9, -1, 4, -1, 6, -1, -1, -1, 5],
+    [-1, 7, -1, 3, -1, -1, -1, 1, 2],
+    [1, 2, -1, -1, -1, 7, 4, -1, -1],
+    [-1, 4, 9, 2, -1, 6, -1, -1, 7]
 
 ]
 
@@ -50,20 +36,27 @@ class Algorithm:
         self.length = 0
         self.current_board = [
 
-            [-1, 8, -1, 4, -1, 0, 1, 2, 0],
-            [6, 0, 0, 0, -1, 5, -1, 0, 9],
-            [0, -1, 0, -1, 0, 1, 0, 7, -1],
-            [0, -1, 7, -1, 4, -1, -1, -1, -1],
-            [0, -1, 1, -1, 5, 0, 9, 3, -1],
-            [-1, 0, -1, -1, 6, -1, -1, -1, 5],
-            [0, -1, 0, 3, -1, 0, 0, 1, 2],
-            [1, 2, 0, -1, -1, 7, -1, -1, 0],
-            [0, 4, 9, 2, -1, -1, 0, -1, 7]
+            [7, 8, -1, 4, -1, -1, 1, 2, -1],
+            [6, -1, -1, -1, 7, 5, -1, -1, 9],
+            [-1, -1, -1, 6, -1, 1, -1, 7, 8],
+            [-1, -1, 7, -1, 4, -1, 2, 6, -1],
+            [-1, -1, 1, -1, 5, -1, 9, 3, -1],
+            [9, -1, 4, -1, 6, -1, -1, -1, 5],
+            [-1, 7, -1, 3, -1, -1, -1, 1, 2],
+            [1, 2, -1, -1, -1, 7, 4, -1, -1],
+            [-1, 4, 9, 2, -1, 6, -1, -1, 7]
 
         ]
+    def find_next_tile(self):
+        for i in range(9):
+            for j in range(9):
+                if self.current_board[i][j] == -1:
+                    return i, j
+        return False
+
 
     def get_length(self):
-        self.length = len(MY_COMPLETED_BOARD)
+        self.length = len(MY_INITIAL_BOARD)
         return self.length
 
     def get_cols(self, col):
@@ -85,7 +78,7 @@ class Algorithm:
         return self.current_board[row][col]
 
     def set_tile(self, row, col, number):
-        if 0 <= number <= 9 and MY_INITIAL_BOARD[row][col] == -1 and not self.check_wrong(row, col, number):
+        if -1 <= number <= 9 and MY_INITIAL_BOARD[row][col] == -1:
             self.current_board[row][col] = number
 
     def check_wrong(self, row, col, number):
@@ -112,18 +105,48 @@ class Algorithm:
                 lst.append(self.current_board[i][j])
         return lst
 
+    def backtrace(self):
+        ''' 1. Pick an empty spot
+            2. Try all numbers for that spot
+            3. Find a number that works
+            4. Move onto the next empty spot, repeat
+            5. If wrong, backtrace/recurse your way back
+            6. End'''
+        #THE PROBLEM IS THAT IT IS NOT GOING BACK
+        #maybe put another if statement
+        if not self.find_next_tile():
+            return True
+        else:
+            row, col = self.find_next_tile()
+        if row is not False and col is not False:
+            for i in range(1,10):
+                if not self.check_wrong(row, col, i) :
+                    self.set_tile(row,col,i)
+                    if self.backtrace():
+                        return True
+
+                    self.set_tile(row,col,-1)
+        return False
+                #if i == 9 and row is not False and col is not False:
+                    # problem is that it's not going backwards.
+                    # iterates over same thing when you run out of a number b/c doing set tile to -1
+                    # e.g, row 0, column 5, no valid numbers, so need to move backwards
+                    # but problem is it won't move backwards
+                    #self.set_tile(row,col,-1)
+                #    return self.backtrace()
+
+
+
+
+        # going to need to use recursion
 
 ''' The row is just the index nested list of where the element resides
     The column is every ith element in EACH nested list'''
 
 a = Algorithm()
 pprint(a.get_current_board())
-print("\n\n")
-a.set_tile(8, 7, 5)
+a.backtrace()
+print("\n\n\n")
 pprint(a.get_current_board())
-a.set_tile(8, 7, -1)
-print(a.check_wrong(8, 4, 3))
-a.set_tile(8, 4, 3)
-(pprint(a.get_current_board()))
-print("\n")
-print(a.get_grid(8, 8))
+
+
