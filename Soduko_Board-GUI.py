@@ -49,14 +49,30 @@ class GUI:
             surface.blit(screen_txt, [x_coord, y_coord])
     def draw_entire_grid(self, board):
 
-        count = 20
         font = pygame.font.Font('freesansbold.ttf', 65)
         for i in range(9):
+            count = 20
             for j in range(9):
                 if board.current_board[i][j]!=-1:
                     screen_txt = font.render(str(board.current_board[i][j]), True, BLACK)
                     if i == 0:
                         SCREEN.blit(screen_txt, [(count), 8])
+                    elif i == 1:
+                        SCREEN.blit(screen_txt, [(count), 71])
+                    elif i == 2:
+                        SCREEN.blit(screen_txt, [(count), 134])
+                    elif i == 3:
+                        SCREEN.blit(screen_txt, [(count), 205])
+                    elif i == 4:
+                        SCREEN.blit(screen_txt, [(count), 270])
+                    elif i == 5:
+                        SCREEN.blit(screen_txt, [(count), 335])
+                    elif i == 6:
+                        SCREEN.blit(screen_txt, [(count), 405])
+                    elif i == 7:
+                        SCREEN.blit(screen_txt, [(count), 470])
+                    elif i == 8:
+                        SCREEN.blit(screen_txt, [(count), 540])
                 count+=66
 
 def main():
