@@ -2,6 +2,9 @@ import pygame
 import time
 import random
 
+import Soduko_Board_Algorithim
+from Soduko_Board_Algorithim import Algorithm
+
 pygame.init()
 
 SCREEN_WIDTH = 600
@@ -21,6 +24,7 @@ class GUI:
         self.score = 0
 
 
+
     def draw_board(self):
         SCREEN.fill((255, 255, 255))
         count = 1
@@ -34,26 +38,54 @@ class GUI:
                 pygame.draw.line(SCREEN, BLACK, (0, i * 200 / 3), (630, i * 200 / 3), 5)
 
         pygame.draw.line(SCREEN, BLACK, (0, 630), (SCREEN_WIDTH, 630), 15)  # CHANGE THE STARTING Y AND ENDING Y -
+        pygame.draw.line(SCREEN, BLACK, (0, 0), (SCREEN_WIDTH, 0), 15)  # CHANGE THE STARTING Y AND ENDING Y -
+        pygame.draw.line(SCREEN, BLACK, (0, 0), (0, SCREEN_HEIGHT - 200), 15)  # CHANGE THE STARTING Y AND ENDING Y -
+        pygame.draw.line(SCREEN, BLACK, (SCREEN_WIDTH, 0), (SCREEN_WIDTH, SCREEN_HEIGHT - 200), 15)  # CHANGE THE STARTING Y AND ENDING Y -
 
-    def set_message(self, msg, color, surface, x_coord, y_coord, current_board, initial_board):
-        if not initial_board[x_coord][y_coord]:
+    def set_message(self, msg, color, surface, x_coord, y_coord, board):
+        if board.current_board[x_coord][y_coord]:
             font = pygame.font.Font('freesansbold.ttf', 18)
             screen_txt = font.render(msg, True, color)
             surface.blit(screen_txt, [x_coord, y_coord])
+    def draw_entire_grid(self, board):
+
+        count = 20
+        font = pygame.font.Font('freesansbold.ttf', 65)
+        for i in range(9):
+            for j in range(9):
+                if board.current_board[i][j]!=-1:
+                    screen_txt = font.render(str(board.current_board[i][j]), True, BLACK)
+                    if i == 0:
+                        SCREEN.blit(screen_txt, [(count), 8])
+                count+=66
 
 def main():
+    my_board = [
+
+        [7, 8, -1, 4, -1, -1, 1, 2, -1],
+        [6, -1, -1, -1, 7, 5, -1, -1, 9],
+        [-1, -1, -1, 6, -1, 1, -1, 7, 8],
+        [-1, -1, 7, -1, 4, -1, 2, 6, -1],
+        [-1, -1, 1, -1, 5, -1, 9, 3, -1],
+        [9, -1, 4, -1, 6, -1, -1, -1, 5],
+        [-1, 7, -1, 3, -1, -1, -1, 1, 2],
+        [1, 2, -1, -1, -1, 7, 4, -1, -1],
+        [-1, 4, 9, 2, -1, 6, -1, -1, 7]
+
+    ]
     pygame.init()
     clock = pygame.time.Clock()
     user_interface = GUI()
     running = True
     user_interface.draw_board()
+    board = Algorithm(my_board)
     while running:
         clock.tick(8)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
-
+        user_interface.draw_entire_grid(board)
         pygame.display.update()
 
 
