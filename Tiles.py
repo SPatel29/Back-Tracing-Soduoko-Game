@@ -54,8 +54,8 @@ class Tiles:
     def get_active(self):
         return self.active
 
-    def set_active(self, status="active"):
-        if status == "active":
+    def set_active(self, status):
+        if status:
             self.active = True
         else:
             self.active = False
@@ -156,6 +156,7 @@ def main():
     my_lst = []
     y_axis = 65  # maybe make thin line 65 and thick line 68?
     x_axis = 20
+    count = 0
     for i in range(9):
         if i == 3:
             y_axis += 7
@@ -172,23 +173,29 @@ def main():
         x_axis = 20
 
     for x in range(len(my_lst)):
-        print(my_lst[x].get_x(), my_lst[x].get_x(), " X, Y")
+        print(my_lst[x].get_value(), my_lst[x].get_row(), my_lst[x].get_col(), "VALue, X, Y")
 
     running = True
     pygame.init()
     clock = pygame.time.Clock()
     while running:
-        clock.tick(8)
+        clock.tick(60)
         SCREEN.fill(WHITE)
+        for i in range(len(my_lst)):
+            my_lst[i].draw_rectangle()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print(pygame.mouse.get_pos())
-        for i in range(len(my_lst)):
-            my_lst[i].draw_rectangle()
-        SCREEN.fill(WHITE)  # UNCOMMENT THIS TO GET UN-DISPLAY THE RED RECTANGLES, BUT STILL HAVE THEM ON THE BACKGROUND
+                for i in range(len(my_lst)):
+                    print(my_lst[i].get_active())
+                    if pygame.Rect.collidepoint(my_lst[i].get_tile(),pygame.mouse.get_pos()):
+                        my_lst[i].set_active(True)
+                    else:
+                        my_lst[i].set_active(False)
+
+        #SCREEN.fill(WHITE)  # UNCOMMENT THIS TO GET UN-DISPLAY THE RED RECTANGLES, BUT STILL HAVE THEM ON THE BACKGROUND
         draw_vertical_lines()
         draw_horizontal_lines()
         pygame.display.update()
