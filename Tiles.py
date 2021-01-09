@@ -94,6 +94,9 @@ def draw_vertical_lines():
                 thickness = 10
             if j != 8:
                 pygame.draw.line(SCREEN, BLACK, (start_x_value, start_y_value), (end_x_value, end_y_value), thickness)
+            if j == 8:
+                thickness = 10
+                pygame.draw.line(SCREEN, BLACK, (start_x_value, start_y_value), (end_x_value, end_y_value), thickness)
             if j == 2 or j == 5:
                 start_x_value += 3
                 end_x_value += 3
@@ -127,6 +130,13 @@ def draw_horizontal_lines():
             end_y_value += 65
             if i != 8:
                 pygame.draw.line(SCREEN, BLACK, (start_x_value, start_y_value), (end_x_value, end_y_value), thickness)
+            else:
+                thickness = 10
+                end_x_value += 7
+                pygame.draw.line(SCREEN, BLACK, (start_x_value, start_y_value), (end_x_value, end_y_value), thickness)
+    pygame.draw.line(SCREEN, BLACK, (20, 65), (613, 65), 10)
+    pygame.draw.line(SCREEN, BLACK, (20, 65), (613, 65), 10)
+    pygame.draw.line(SCREEN, BLACK, (20, 61), (20, 666), 10)
 
 
 def main():
@@ -178,7 +188,7 @@ def main():
                 print(pygame.mouse.get_pos())
         for i in range(len(my_lst)):
             my_lst[i].draw_rectangle()
-
+        SCREEN.fill(WHITE)  # UNCOMMENT THIS TO GET UN-DISPLAY THE RED RECTANGLES, BUT STILL HAVE THEM ON THE BACKGROUND
         draw_vertical_lines()
         draw_horizontal_lines()
         pygame.display.update()
