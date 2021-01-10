@@ -14,6 +14,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+GREY = (128,128,128)
 
 ACTIVE_COLOR = (173, 216, 230)
 UN_ACTIVE_COLOR = WHITE
@@ -146,6 +147,8 @@ def draw_horizontal_lines():
     pygame.draw.line(SCREEN, BLACK, (20, 61), (20, 666), 10)
 
 
+
+
 def main():
     board = [
 
@@ -184,9 +187,12 @@ def main():
     running = True
     pygame.init()
     clock = pygame.time.Clock()
+    color = GREY
     while running:
         clock.tick(60)
         SCREEN.fill(WHITE)
+        check_one = pygame.draw.rect(SCREEN, BLACK, [10,12,100,30])
+        check_work = pygame.draw.rect(SCREEN, BLACK, [400,12,230,30])
         for i in range(len(my_lst)):
             my_lst[i].draw_rectangle()
         for event in pygame.event.get():
@@ -194,73 +200,108 @@ def main():
                 pygame.quit()
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                for i in range(len(my_lst)):
-                    if pygame.Rect.collidepoint(my_lst[i].get_tile(), pygame.mouse.get_pos()):
-                        my_lst[i].set_active(True)
-                    else:
-                        my_lst[i].set_active(False)
-            if event.type == pygame.KEYDOWN:  # IF SOMEONE PRESSES A KEY AND WE HAVE A TILE ACTIVE
-                if event.key == pygame.K_SPACE:
+                if pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
+                    count = 0
+                    for i in range(9):
+                        for j in range(9):
+                            if my_lst[count].get_active():
+                                if algorithm.get_current_board()[i][j] == algorithm.get_finished_board()[i][j]:
+                                    algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                            count+=1
+                elif pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
                     if algorithm.find_next_tile(
                             algorithm.get_current_board()) and algorithm.get_finished_board() != algorithm.get_current_board():
                         print("NOT DONE")
                     else:
-                        print("DONE")
+                        color = BLACK
+                else:
+                    for i in range(len(my_lst)):
+                        if pygame.Rect.collidepoint(my_lst[i].get_tile(), pygame.mouse.get_pos()):
+                            my_lst[i].set_active(True)
+                        else:
+                            my_lst[i].set_active(False)
+            if event.type == pygame.KEYDOWN:
                 for i in range(len(my_lst)):
                     if my_lst[i].get_active():
                         if event.key == pygame.K_1:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 1):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 1)
                         if event.key == pygame.K_2:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 2):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 2)
                         if event.key == pygame.K_3:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 3):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 3)
                         if event.key == pygame.K_4:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 4):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 4)
                         if event.key == pygame.K_5:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 5):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 5)
                         if event.key == pygame.K_6:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 6):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 6)
                         if event.key == pygame.K_7:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 7):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 7)
                         if event.key == pygame.K_8:
+                            # I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            # IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 8):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 8)
                         if event.key == pygame.K_9:
+                            #I CAN JUST SET THE TILE VALUE HERE REGARDLESS IF WRONG OR RIGHT
+                            #IF IT IS RIGHT THEN MOVE ONTO THE IF STATEMENT WHERE I DO SET_TILE (NEXT LINE CODE)
+
                             if not algorithm.check_wrong(algorithm.get_current_board(), my_lst[i].get_row(),
                                                          my_lst[i].get_col(), 9):
                                 algorithm.set_tile(algorithm.get_current_board(), my_lst[i].get_row(),
                                                    my_lst[i].get_col(), 9)
         count = 0
+
         for i in range(len(algorithm.get_current_board())):
             for j in range(len(algorithm.get_current_board())):
                 if my_lst[count].get_row() == i and my_lst[count].get_col() == j and algorithm.get_current_board()[i][
                     j] != -1:
-                    set_message(str(algorithm.get_current_board()[i][j]), BLACK, SCREEN, my_lst[count].get_x() + 20,
-                                my_lst[count].get_y() + 15)
+                    if algorithm.get_initial_board()[i][j] == -1:
+                        set_message(str(algorithm.get_current_board()[i][j]), color, SCREEN, my_lst[count].get_x() + 20,
+                                    my_lst[count].get_y() + 15)
+                    else:
+                        set_message(str(algorithm.get_current_board()[i][j]), BLACK, SCREEN, my_lst[count].get_x() + 20,
+                                    my_lst[count].get_y() + 15)
                 count += 1
+        set_message("Check ONE", WHITE, SCREEN, 15, 12)
+        set_message("Check ALL work", WHITE, SCREEN, 400, 12)
 
         draw_vertical_lines()
         draw_horizontal_lines()
