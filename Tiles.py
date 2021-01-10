@@ -1,6 +1,6 @@
 from Soduko_Board_Algorithim import Algorithm
 import pygame
-
+from Soduko_Board_Algorithim import Algorithm
 pygame.init()
 
 SCREEN_WIDTH = 660
@@ -14,8 +14,9 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+
 ACTIVE_COLOR = (173, 216, 230)
-UN_ACTIVE_COLOR = RED
+UN_ACTIVE_COLOR = WHITE
 
 
 class Tiles:
@@ -74,6 +75,14 @@ class Tiles:
 
     def write_to_tile(self):
         pass
+
+
+
+
+def set_message(msg, color, surface, x_coord, y_coord):
+    font = pygame.font.Font('freesansbold.ttf', 28)
+    screen_txt = font.render(msg, True, color)
+    surface.blit(screen_txt, [x_coord, y_coord])
 
 
 def draw_vertical_lines():
@@ -156,7 +165,6 @@ def main():
     my_lst = []
     y_axis = 65  # maybe make thin line 65 and thick line 68?
     x_axis = 20
-    count = 0
     for i in range(9):
         if i == 3:
             y_axis += 7
@@ -172,9 +180,9 @@ def main():
         y_axis += 65
         x_axis = 20
 
-    for x in range(len(my_lst)):
-        print(my_lst[x].get_value(), my_lst[x].get_row(), my_lst[x].get_col(), "VALue, X, Y")
-
+    algorithm = Algorithm(board)
+    algorithm.set_finished_board()
+    print(algorithm.get_finished_board())
     running = True
     pygame.init()
     clock = pygame.time.Clock()
@@ -189,12 +197,46 @@ def main():
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(my_lst)):
-                    print(my_lst[i].get_active())
                     if pygame.Rect.collidepoint(my_lst[i].get_tile(),pygame.mouse.get_pos()):
                         my_lst[i].set_active(True)
                     else:
                         my_lst[i].set_active(False)
-
+            if event.type ==  pygame.KEYDOWN: #IF SOMEONE PRESSES A KEY AND WE HAVE A TILE ACTIVE
+                for i in range(len(my_lst)):
+                    if my_lst[i].get_active():
+                        if event.key == pygame.K_1:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 1):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),1)
+                        if event.key == pygame.K_2:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 2):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),2)
+                        if event.key == pygame.K_3:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 3):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),3)
+                        if event.key == pygame.K_4:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 4):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),4)
+                        if event.key == pygame.K_5:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 5):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),5)
+                        if event.key == pygame.K_6:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 6):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),6)
+                        if event.key == pygame.K_7:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 7):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),7)
+                        if event.key == pygame.K_8:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 8):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),8)
+                        if event.key == pygame.K_9:
+                            if not algorithm.check_wrong(algorithm.get_current_board(),my_lst[i].get_row(), my_lst[i].get_col(), 9):
+                                algorithm.set_tile(algorithm.get_current_board(),my_lst[i].get_row(),my_lst[i].get_col(),9)
+        count = 0
+        for i in range(len(algorithm.get_current_board())):
+            for j in range(len(algorithm.get_current_board())):
+                if my_lst[count].get_row() == i and my_lst[count].get_col() == j and algorithm.get_current_board()[i][j] != -1:
+                    set_message(str(algorithm.get_current_board()[i][j]),BLACK,SCREEN,my_lst[count].get_x()+15,my_lst[count].get_y()+15)
+                count += 1
         #SCREEN.fill(WHITE)  # UNCOMMENT THIS TO GET UN-DISPLAY THE RED RECTANGLES, BUT STILL HAVE THEM ON THE BACKGROUND
         draw_vertical_lines()
         draw_horizontal_lines()
