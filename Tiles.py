@@ -1,5 +1,5 @@
-from Soduko_Board_Algorithim import Algorithm
 import pygame
+import time
 from Soduko_Board_Algorithim import Algorithm
 
 pygame.init()
@@ -19,6 +19,22 @@ ACTIVE_COLOR = (173, 216, 230)
 UN_ACTIVE_COLOR = WHITE
 
 
+
+def neturalize_row_col(row, col):
+    if row % 3 != 0:
+        if (row - 1) % 3 == 0:
+            row -= 1
+        elif (row - 2) % 3 == 0:
+            row -= 2
+    if col % 3 != 0:
+        if (col - 1) % 3 == 0:
+            col -= 1
+        elif (col - 2) % 3 == 0:
+            col -= 2
+    return row, col
+
+
+
 class Tiles:
     def __init__(self, value, row, col, x, y, width, height, font_color, active=False):
         self.value = value
@@ -30,11 +46,14 @@ class Tiles:
         self.col = col
         self.font_color = font_color
 
-    def draw_rectangle(self):
-        if not self.active:
-            pygame.draw.rect(SCREEN, UN_ACTIVE_COLOR, self.get_tile())
+    def draw_rectangle(self, value2): #ADDED THE IF STATEMENT CLAUSE, YOU CAN DELETE IT AND REMOVE THE ElSE AND KEEP THE REST TO MAKE IT WORK
+        if self.value == value2:
+            pygame.draw.rect(SCREEN, GREEN, self.tile)
         else:
-            pygame.draw.rect(SCREEN, ACTIVE_COLOR, self.get_tile())
+            if not self.active:
+                pygame.draw.rect(SCREEN, UN_ACTIVE_COLOR, self.get_tile())
+            else:
+                pygame.draw.rect(SCREEN, ACTIVE_COLOR, self.get_tile())
 
     def get_tile(self):
         return self.tile
@@ -141,7 +160,13 @@ def draw_horizontal_lines():
     pygame.draw.line(SCREEN, BLACK, (20, 65), (613, 65), 10)
     pygame.draw.line(SCREEN, BLACK, (20, 61), (20, 666), 10)
 
-
+def defeat_screen():
+    SCREEN.fill(WHITE)
+    set_message("YOU LOSE!", RED, SCREEN, 300, 300)
+    pygame.display.update()
+    time.sleep(3)
+    pygame.quit()
+    quit()
 def main():
     board = [
 
@@ -156,7 +181,7 @@ def main():
         [-1, 4, 9, 2, -1, 6, -1, -1, 7]
 
     ]
-    my_lst, y_axis, x_axis = [], 65, 20
+    hearts, my_lst, y_axis, x_axis = [], [], 65, 20
     for i in range(9):
         if i == 3:
             y_axis += 7
@@ -176,18 +201,24 @@ def main():
     running = True
     pygame.init()
     clock = pygame.time.Clock()
+    for i in range(3):
+        hearts.append(pygame.image.load('heart pixel art 32x32.png'))
     while running:
         clock.tick(60)
         SCREEN.fill(WHITE)
         check_one = pygame.draw.rect(SCREEN, BLACK, [10, 12, 100, 30])
-        check_work = pygame.draw.rect(SCREEN, BLACK, [400, 12, 230, 30])
+        check_work = pygame.draw.rect(SCREEN, BLACK, [480, 12, 151, 30])
+        solve_one = pygame.draw.rect(SCREEN, BLACK, [135, 12, 150, 30])
+        solve_grid = pygame.draw.rect(SCREEN, BLACK, [310, 12, 156, 30])
+
         for i in range(len(my_lst)):
-            my_lst[i].draw_rectangle()
+            my_lst[i].draw_rectangle(algorithm.get_initial_board()) # not sure if paremeter is initial or finished board
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                #print(pygame.mouse.get_pos())
                 if pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
@@ -195,16 +226,20 @@ def main():
                             if my_lst[count].get_active():
                                 if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]:
                                     algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                                else:
+                                    if hearts:
+                                        hearts.pop()
                             count += 1
+                    if not hearts:
+                        defeat_screen()
                 elif pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
                     count = 0
-                    """THE PROBLEM PROBABLY RESIDES IN THIS CODE"""
                     if algorithm.get_current_board() == algorithm.get_finished_board():
                         for i in range(9):
                             for j in range(9):
                                 my_lst[count].set_font_color(BLACK)
                                 algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
-                                count+=1
+                                count += 1
                     else:
                         for i in range(9):
                             for j in range(9):
@@ -212,8 +247,36 @@ def main():
                                     my_lst[count].set_font_color(BLACK)
                                     algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                                 else:
+                                    if hearts:
+                                        hearts.pop()
                                     my_lst[count].set_font_color(GREY)
-                                count+=1
+                                count += 1
+                        if not hearts:
+                            defeat_screen()
+                elif pygame.Rect.collidepoint(solve_one, pygame.mouse.get_pos()):
+                    count = 0
+                    for i in range(9):
+                        for j in range(9):
+                            if my_lst[count].get_active():
+                                my_lst[count].set_value(algorithm.get_finished_board()[i][j])
+                                algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                            count += 1
+                elif pygame.Rect.collidepoint(solve_grid, pygame.mouse.get_pos()):
+                    count = 0
+                    row = 0
+                    col = 0
+                    for i in range(81):
+                        if my_lst[i].get_active():
+                            count = my_lst[i].get_row()
+                            row, col = neturalize_row_col(my_lst[i].get_row(), my_lst[i].get_col())
+
+                    for i in range(row, row + 3):
+                        for j in range(col, col + 3):
+                            num = my_lst[count].get_value()
+                            num = (algorithm.get_finished_board()[i][j])
+                            algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                            count += 1
+                        count += 9
                 else:
                     for i in range(len(my_lst)):
                         if pygame.Rect.collidepoint(my_lst[i].get_tile(), pygame.mouse.get_pos()):
@@ -247,14 +310,21 @@ def main():
                 if my_lst[count].get_row() == i and my_lst[count].get_col() == j:
                     if algorithm.get_initial_board()[i][j] == -1:
                         if my_lst[count].get_value() != -1:
-                            set_message(str(my_lst[count].get_value()), GREY, SCREEN,my_lst[count].get_x() + 20,my_lst[count].get_y() + 15)
+                            set_message(str(my_lst[count].get_value()), GREY, SCREEN, my_lst[count].get_x() + 20,
+                                        my_lst[count].get_y() + 15)
                     else:
                         set_message(str(algorithm.get_finished_board()[i][j]), BLACK, SCREEN,
                                     my_lst[count].get_x() + 20,
                                     my_lst[count].get_y() + 15)
                 count += 1
-        set_message("Check ONE", WHITE, SCREEN, 15, 12)
-        set_message("Check ALL work", WHITE, SCREEN, 400, 12)
+        x, y = 580, 668
+        for i in hearts:
+            SCREEN.blit(i, [x,y])
+            x -= 50
+        set_message("Check", WHITE, SCREEN, 15, 15)
+        set_message("Check ALL", WHITE, SCREEN, 480, 15)
+        set_message("Solve ONE", WHITE, SCREEN, 135, 15)
+        set_message("Solve GRID", WHITE, SCREEN, 310, 15)
         draw_vertical_lines()
         draw_horizontal_lines()
         pygame.display.update()
