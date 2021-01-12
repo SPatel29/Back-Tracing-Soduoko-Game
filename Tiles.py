@@ -32,6 +32,7 @@ def neturalize_row_col(row, col):
             col -= 2
     return row, col
 
+
 def reformat_time(seconds):
     if seconds < 60:
         return str(seconds) + ' seconds'
@@ -55,15 +56,11 @@ class Tiles:
         self.col = col
         self.font_color = font_color
 
-    def draw_rectangle(self,
-                       value2):  # ADDED THE IF STATEMENT CLAUSE, YOU CAN DELETE IT AND REMOVE THE ElSE AND KEEP THE REST TO MAKE IT WORK
-        if self.value == value2:
-            pygame.draw.rect(SCREEN, GREEN, self.tile)
+    def draw_rectangle(self,):
+        if not self.active:
+            pygame.draw.rect(SCREEN, UN_ACTIVE_COLOR, self.get_tile())
         else:
-            if not self.active:
-                pygame.draw.rect(SCREEN, UN_ACTIVE_COLOR, self.get_tile())
-            else:
-                pygame.draw.rect(SCREEN, ACTIVE_COLOR, self.get_tile())
+            pygame.draw.rect(SCREEN, ACTIVE_COLOR, self.get_tile())
 
     def get_tile(self):
         return self.tile
@@ -106,6 +103,15 @@ def set_message(msg, color, surface, x_coord, y_coord):
     font = pygame.font.Font('freesansbold.ttf', 28)
     screen_txt = font.render(msg, True, color)
     surface.blit(screen_txt, [x_coord, y_coord])
+
+
+def draw_boxes(message):
+    play_again = pygame.draw.rect(SCREEN, BLACK, [10, 12, 165, 30])
+    quit_game = pygame.draw.rect(SCREEN, BLACK, [450, 12, 156, 30])
+    set_message("Play again?", WHITE, SCREEN, 10, 12)
+    set_message(str(message), RED, SCREEN, 270, 12)
+    set_message("Quit Game", WHITE, SCREEN, 450, 15)
+    return play_again, quit_game
 
 
 def draw_vertical_lines():
@@ -171,19 +177,13 @@ def draw_horizontal_lines():
     pygame.draw.line(SCREEN, BLACK, (20, 61), (20, 666), 10)
 
 
-def defeat_screen():
-    SCREEN.fill(WHITE)
-    set_message("YOU LOSE!", RED, SCREEN, 300, 300)
-    pygame.display.update()
-    time.sleep(3)
-    pygame.quit()
-    quit()
-
 def draw_lives(hearts):
     x, y = 580, 668
     for i in hearts:
         SCREEN.blit(i, [x, y])
         x -= 50
+
+
 def main():
     board = [
 
@@ -228,6 +228,7 @@ def main():
     solve_one = None
     solve_grid = None
     play_again = None
+    quit_game = None
     while running:
         clock.tick(60)
         if hearts and algorithm.find_next_tile(algorithm.get_initial_board()):
@@ -243,17 +244,12 @@ def main():
             set_message("Solve TILE", WHITE, SCREEN, 120, 15)
             set_message("Solve GRID", WHITE, SCREEN, 280, 15)
         elif hearts and not algorithm.find_next_tile(algorithm.get_initial_board()):
-            play_again = pygame.draw.rect(SCREEN, BLACK, [10, 12, 165, 30])
-            set_message("Play again?", WHITE, SCREEN, 10, 12)
-            set_message("You win!", RED, SCREEN, 270, 12)
+            play_again, quit_game = draw_boxes("You Win!")
         else:
-            play_again = pygame.draw.rect(SCREEN, BLACK, [10, 12, 165, 30])
-            set_message("Play again?", WHITE, SCREEN, 10,12)
-            set_message("You lose!", RED, SCREEN, 270,12)
-
+            play_again, quit_game = draw_boxes("You Lose!")
         pygame.draw.rect(SCREEN, WHITE, [17, 675, 250, 30])
         for i in range(len(my_lst)):
-            my_lst[i].draw_rectangle(algorithm.get_initial_board())
+            my_lst[i].draw_rectangle()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 pygame.quit()
@@ -261,8 +257,11 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if play_again and pygame.Rect.collidepoint(play_again, pygame.mouse.get_pos()):
                     main()
-                #print(pygame.mouse.get_pos())
-                if pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
+                if quit_game and pygame.Rect.collidepoint(quit_game, pygame.mouse.get_pos()):
+                    pygame.quit()
+                    quit()
+                # print(pygame.mouse.get_pos())
+                if hearts and pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
                         for j in range(9):
@@ -273,7 +272,7 @@ def main():
                                     if hearts:
                                         hearts.pop()
                             count += 1
-                elif pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
+                elif hearts and pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
                     count = 0
                     if algorithm.get_current_board() == algorithm.get_finished_board():
                         for i in range(9):
@@ -292,7 +291,7 @@ def main():
                                         hearts.pop()
                                     my_lst[count].set_font_color(GREY)
                                 count += 1
-                elif pygame.Rect.collidepoint(solve_one, pygame.mouse.get_pos()):
+                elif hearts and pygame.Rect.collidepoint(solve_one, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
                         for j in range(9):
@@ -300,7 +299,7 @@ def main():
                                 my_lst[count].set_value(algorithm.get_finished_board()[i][j])
                                 algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                             count += 1
-                elif pygame.Rect.collidepoint(solve_grid, pygame.mouse.get_pos()):
+                elif hearts and pygame.Rect.collidepoint(solve_grid, pygame.mouse.get_pos()):
                     count = 0
                     row = 0
                     col = 0
@@ -319,7 +318,7 @@ def main():
                             my_lst[i].set_active(True)
                         else:
                             my_lst[i].set_active(False)
-            if event.type == pygame.KEYDOWN:
+            if hearts and event.type == pygame.KEYDOWN:
                 for i in range(len(my_lst)):
                     if my_lst[i].get_active():
                         if event.key == pygame.K_1:
@@ -354,7 +353,6 @@ def main():
                                     my_lst[count].get_y() + 15)
                 count += 1
         draw_lives(hearts)
-
         draw_vertical_lines(), draw_horizontal_lines()
         set_message(reformat_time(current_time), RED, SCREEN, 17, 675)
         pygame.display.update()
