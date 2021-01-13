@@ -1,7 +1,7 @@
 import pygame
 import time
 from Soduko_Board_Algorithim import Algorithm
-
+from pygame import mixer
 pygame.init()
 
 font = pygame.font.Font(None, 54)
@@ -213,6 +213,7 @@ def main():
     algorithm.set_finished_board()
     running = True
     pygame.init()
+    pygame.mixer.init()
     clock = pygame.time.Clock()
     pygame.time.get_ticks()
     initial_time = time.time()
@@ -266,32 +267,37 @@ def main():
                     pygame.quit()
                     quit()
                 if hearts and pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
-                    i,j,count = find_active(my_lst)
+                    i, j, count = find_active(my_lst)
                     if my_lst[count].get_active():
                         if my_lst[count].get_value() == algorithm.get_finished_board()[i][j] \
-                                        or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]:
+                                or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]:
                             algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                            mixer.Sound("correct_answer.wav").play()
                         else:
                             if hearts:
                                 hearts.pop()
+                                mixer.Sound("incorrect_answer.mp3").play()
+
                 elif hearts and pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
                         for j in range(9):
-                            if algorithm.get_current_board() == algorithm.get_finished_board():
+                            if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]\
+                                    or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]: #BUG HERE
                                 my_lst[count].set_font_color(BLACK)
                                 algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                                print(my_lst[count].get_value(), algorithm.get_finished_board()[i][j])
+                                if not algorithm.find_next_tile(algorithm.get_initial_board()):
+                                    mixer.Sound("victory_sound.mp3").play()
                             else:
-                                if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]:
-                                    my_lst[count].set_font_color(BLACK)
-                                    algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
-                                else:
-                                    if hearts:
-                                        hearts.pop()
+                                if hearts:
+                                    hearts.pop()
                                     my_lst[count].set_font_color(GREY)
-                        count += 1
+                                if not hearts:
+                                    mixer.Sound("defeat_sound.wav").play()
+                            count += 1
                 elif hearts and pygame.Rect.collidepoint(solve_one, pygame.mouse.get_pos()):
-                    i,j,count = find_active(my_lst)
+                    i, j, count = find_active(my_lst)
                     if my_lst[count].get_active():
                         my_lst[count].set_value(algorithm.get_finished_board()[i][j])
                         algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
