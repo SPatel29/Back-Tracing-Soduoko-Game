@@ -261,7 +261,8 @@ def main():
                     for i in range(9):
                         for j in range(9):
                             if my_lst[count].get_active():
-                                if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]:
+                                if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]\
+                                        or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]:
                                     algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                                 else:
                                     if hearts:
@@ -295,17 +296,19 @@ def main():
                                 algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                             count += 1
                 elif hearts and pygame.Rect.collidepoint(solve_grid, pygame.mouse.get_pos()):
-                    count = 0
+                    count = 0 #FOUND AN ERROR IN GRID. IF SOLVE GRID, THEN CHECK AGAIN, TAKES A LIFE
                     row = 0
                     col = 0
                     for i in range(81):
                         if my_lst[i].get_active():
                             count = my_lst[i].get_row()
                             row, col = neturalize_row_col(my_lst[i].get_row(), my_lst[i].get_col())
+                    count_2 = row
                     for i in range(row, row + 3):
                         for j in range(col, col + 3):
                             algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                             count += 1
+                            count_2 += 1
                         count += 9
                 else:
                     for i in range(len(my_lst)):
