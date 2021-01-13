@@ -19,6 +19,7 @@ GREY = (128, 128, 128)
 ACTIVE_COLOR = (173, 216, 230)
 UN_ACTIVE_COLOR = WHITE
 
+
 def neturalize_row_col(row, col):
     if row % 3 != 0:
         if (row - 1) % 3 == 0:
@@ -56,7 +57,7 @@ class Tiles:
         self.col = col
         self.font_color = font_color
 
-    def draw_rectangle(self,):
+    def draw_rectangle(self):
         if not self.active:
             pygame.draw.rect(SCREEN, UN_ACTIVE_COLOR, self.get_tile())
         else:
@@ -109,7 +110,7 @@ def draw_boxes(message):
     play_again = pygame.draw.rect(SCREEN, BLACK, [10, 12, 165, 30])
     quit_game = pygame.draw.rect(SCREEN, BLACK, [450, 12, 156, 30])
     set_message("Play again?", WHITE, SCREEN, 10, 12)
-    set_message(str(message), RED, SCREEN, 270, 12)
+    set_message(str(message), RED, SCREEN, 250, 12)
     set_message("Quit Game", WHITE, SCREEN, 450, 15)
     return play_again, quit_game
 
@@ -223,12 +224,7 @@ def main():
     pygame.time.get_ticks()
     initial_time = time.time()
     current_time = 0
-    check_one = None
-    check_work = None
-    solve_one = None
-    solve_grid = None
-    play_again = None
-    quit_game = None
+    solve_grid, check_one, check_work, solve_one, play_again, quit_game = None, None, None, None, None, None
     while running:
         clock.tick(60)
         if hearts and algorithm.find_next_tile(algorithm.get_initial_board()):
@@ -260,7 +256,6 @@ def main():
                 if quit_game and pygame.Rect.collidepoint(quit_game, pygame.mouse.get_pos()):
                     pygame.quit()
                     quit()
-                # print(pygame.mouse.get_pos())
                 if hearts and pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
@@ -319,8 +314,12 @@ def main():
                         else:
                             my_lst[i].set_active(False)
             if hearts and event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    algorithm.backtrace(algorithm.get_initial_board(), SCREEN, my_lst)
                 for i in range(len(my_lst)):
                     if my_lst[i].get_active():
+                        if event.key == pygame.K_BACKSPACE:
+                            my_lst[i].set_value(-1)
                         if event.key == pygame.K_1:
                             my_lst[i].set_value(1)
                         if event.key == pygame.K_2:
@@ -352,6 +351,7 @@ def main():
                                     my_lst[count].get_x() + 20,
                                     my_lst[count].get_y() + 15)
                 count += 1
+
         draw_lives(hearts)
         draw_vertical_lines(), draw_horizontal_lines()
         set_message(reformat_time(current_time), RED, SCREEN, 17, 675)
