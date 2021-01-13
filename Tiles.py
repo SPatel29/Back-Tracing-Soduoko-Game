@@ -185,6 +185,15 @@ def draw_lives(hearts):
         x -= 50
 
 
+def find_active(my_lst):
+    count = 0
+    for i in range(9):
+        for j in range(9):
+            if my_lst[count].get_active():
+                return i, j, count
+            count += 1
+
+
 def main():
     board = [
 
@@ -200,6 +209,17 @@ def main():
 
     ]
     hearts, my_lst, y_axis, x_axis = [], [], 65, 20
+    algorithm = Algorithm(board)
+    algorithm.set_finished_board()
+    running = True
+    pygame.init()
+    clock = pygame.time.Clock()
+    pygame.time.get_ticks()
+    initial_time = time.time()
+    current_time = 0
+    solve_grid, check_one, check_work, solve_one, play_again, quit_game = None, None, None, None, None, None
+    for i in range(3):
+        hearts.append(pygame.image.load('heart pixel art 32x32.png'))
     for i in range(9):
         if i == 3:
             y_axis += 7
@@ -214,17 +234,6 @@ def main():
             x_axis += 65
         y_axis += 65
         x_axis = 20
-    algorithm = Algorithm(board)
-    algorithm.set_finished_board()
-    running = True
-    pygame.init()
-    clock = pygame.time.Clock()
-    for i in range(3):
-        hearts.append(pygame.image.load('heart pixel art 32x32.png'))
-    pygame.time.get_ticks()
-    initial_time = time.time()
-    current_time = 0
-    solve_grid, check_one, check_work, solve_one, play_again, quit_game = None, None, None, None, None, None
     while running:
         clock.tick(60)
         if hearts and algorithm.find_next_tile(algorithm.get_initial_board()):
@@ -257,28 +266,22 @@ def main():
                     pygame.quit()
                     quit()
                 if hearts and pygame.Rect.collidepoint(check_one, pygame.mouse.get_pos()):
+                    i,j,count = find_active(my_lst)
+                    if my_lst[count].get_active():
+                        if my_lst[count].get_value() == algorithm.get_finished_board()[i][j] \
+                                        or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]:
+                            algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                        else:
+                            if hearts:
+                                hearts.pop()
+                elif hearts and pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
                     count = 0
                     for i in range(9):
                         for j in range(9):
-                            if my_lst[count].get_active():
-                                if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]\
-                                        or algorithm.get_initial_board()[i][j] == algorithm.get_finished_board()[i][j]:
-                                    algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
-                                else:
-                                    if hearts:
-                                        hearts.pop()
-                            count += 1
-                elif hearts and pygame.Rect.collidepoint(check_work, pygame.mouse.get_pos()):
-                    count = 0
-                    if algorithm.get_current_board() == algorithm.get_finished_board():
-                        for i in range(9):
-                            for j in range(9):
+                            if algorithm.get_current_board() == algorithm.get_finished_board():
                                 my_lst[count].set_font_color(BLACK)
                                 algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
-                                count += 1
-                    else:
-                        for i in range(9):
-                            for j in range(9):
+                            else:
                                 if my_lst[count].get_value() == algorithm.get_finished_board()[i][j]:
                                     my_lst[count].set_font_color(BLACK)
                                     algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
@@ -286,29 +289,23 @@ def main():
                                     if hearts:
                                         hearts.pop()
                                     my_lst[count].set_font_color(GREY)
-                                count += 1
+                        count += 1
                 elif hearts and pygame.Rect.collidepoint(solve_one, pygame.mouse.get_pos()):
-                    count = 0
-                    for i in range(9):
-                        for j in range(9):
-                            if my_lst[count].get_active():
-                                my_lst[count].set_value(algorithm.get_finished_board()[i][j])
-                                algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
-                            count += 1
+                    i,j,count = find_active(my_lst)
+                    if my_lst[count].get_active():
+                        my_lst[count].set_value(algorithm.get_finished_board()[i][j])
+                        algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
+                        count += 1
                 elif hearts and pygame.Rect.collidepoint(solve_grid, pygame.mouse.get_pos()):
-                    count = 0 #FOUND AN ERROR IN GRID. IF SOLVE GRID, THEN CHECK AGAIN, TAKES A LIFE
-                    row = 0
-                    col = 0
+                    count, row, col = 0, 0, 0
                     for i in range(81):
                         if my_lst[i].get_active():
                             count = my_lst[i].get_row()
                             row, col = neturalize_row_col(my_lst[i].get_row(), my_lst[i].get_col())
-                    count_2 = row
                     for i in range(row, row + 3):
                         for j in range(col, col + 3):
                             algorithm.get_initial_board()[i][j] = algorithm.get_finished_board()[i][j]
                             count += 1
-                            count_2 += 1
                         count += 9
                 else:
                     for i in range(len(my_lst)):
