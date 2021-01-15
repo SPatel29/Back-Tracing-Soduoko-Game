@@ -365,3 +365,12 @@ def main():
 
 
 main()
+
+
+ # Goes to return, not return board  if 9 does not work, b/c that is for loop condition. Once it reaches here, goes back to recursive call.
+                # Since not returning anything, self.backtrace(board) == False,
+                # so it skips the if self.backtrace(board) statement then sets the tile to -1 if no number is found and goes backwards and remembers the "i"
+                # goes backwards again if the backwards number reaches 9 and it doesn't work for that tile. Repeats this cycle until valid number for a previous tile is found
+                # so count also goes backwards. seems like computer remembers the count, row, col, "i" if it goes backwards
+                # once it hits returns, the program springs back up to the previous recursive calls, then does the self.set_tile(board, row, col, -1) to previous tile
+                # then jumps back to the for loop and starting iterating from previous i. Previous i is excluded
