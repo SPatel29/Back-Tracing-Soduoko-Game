@@ -131,12 +131,6 @@ class Algorithm:
         return lst
 
     def backtrace(self, board):
-        ''' 1. Pick an empty spot
-            2. Try all numbers for that spot
-            3. Find a number that works
-            4. Move onto the next empty spot, repeat
-            5. If wrong, backtrace/recurse your way back
-            6. End'''
         if not self.find_next_tile(board):
             return True
         else:
@@ -151,50 +145,3 @@ class Algorithm:
         return False
 
 
-''' The row is just the index nested list of where the element resides
-    The column is every ith element in EACH nested list'''
-board = [
-
-    [7, 8, -1, 4, -1, -1, 1, 2, -1],
-    [6, -1, -1, -1, 7, 5, -1, -1, 9],
-    [-1, -1, -1, 6, -1, 1, -1, 7, 8],
-    [-1, -1, 7, -1, 4, -1, 2, 6, -1],
-    [-1, -1, 1, -1, 5, -1, 9, 3, -1],
-    [9, -1, 4, -1, 6, -1, -1, -1, 5],
-    [-1, 7, -1, 3, -1, -1, -1, 1, 2],
-    [1, 2, -1, -1, -1, 7, 4, -1, -1],
-    [-1, 4, 9, 2, -1, 6, -1, -1, 7]
-
-]
-
-a = Algorithm(board)
-a.set_finished_board()
-pprint(a.get_finished_board())
-"""print("\n\n\n\n")
-pprint(a.get_current_board())
-a.set_tile(a.get_current_board(), 0, 2, 3)
-print("\n\n\n\n")
-pprint(a.get_finished_board())
-print("\n\n\n\n")
-pprint(a.get_initial_board())
-
-print(a.get_grid(a.completed_board, 0, 0))
-print(a.get_grid(a.current_board, 0, 0))"""
-a.solve_grid(a.get_current_board(), 2, 2)
-print("\n\n\n\n")
-pprint(a.get_current_board())
-print(a.get_grid(a.current_board, 2, 2))
-print("\n\n\n")
-pprint(a.get_current_board())
-print("\n\n\n")
-pprint(a.get_finished_board())
-print("\n\n\n")
-a.solve_one_tile(a.get_current_board(), 0, 4)
-pprint(a.get_current_board())
-print("\n\n\n")
-pprint(a.get_finished_board())
-print("\n\n\n")
-pprint(a.get_initial_board())
-
-a.solve_one_tile(a.get_current_board(), 0, 5)
-a.solve_one_tile(a.get_current_board(), 0, 5)
